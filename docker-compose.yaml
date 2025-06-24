@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  nginx:
+    image: registry.openanolis.cn/openanolis/nginx:1.14.1-8.6
+    ports:
+      - "8082:80"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/usr/share/nginx/html
+    depends_on:
+      - golang-app
+      - rag-app
+    networks:
+      - app-network
+
+  golang-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.golang
+    expose:
+      - "8080"
+    volumes:
+      - ./src/config/config.yaml:/app/config/config.yaml
+    env_file:
+      - .env.api
+    networks:
+      - app-network
+    restart: always
+
+  rag-app:
+    build:
+      context: .
+      dockerfile: Dockerfile.rag
+    expose:
+      - "8070"
+    env_file:
+      - .env.api
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge 
