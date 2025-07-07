@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 	"net/http"
-	"project/models"
-	"project/services"
+	"project/src/models"
+	"project/src/services"
 
 	"github.com/gin-gonic/gin"
 )
