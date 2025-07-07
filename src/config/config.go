@@ -54,18 +54,24 @@ var AppConfig Config
 
 // LoadConfig 加载配置文件
 func LoadConfig() {
-	viper.SetConfigName("config")
-	viper.SetConfigType("yaml")
-	viper.AddConfigPath("./config")
+
+	configFiles := []string{"config", "config_cts", "config_grp"}
+	configPath := "./src/config"
 
 	// 设置默认值
 	viper.SetDefault("server.port", "8080")
 
-	if err := viper.ReadInConfig(); err != nil {
-		if _, ok := err.(viper.ConfigFileNotFoundError); ok {
-			log.Println("未找到配置文件，使用默认配置")
-		} else {
-			log.Fatalf("读取配置文件错误: %v", err)
+	for _, configFile := range configFiles {
+		viper.SetConfigName(configFile)
+		viper.SetConfigType("yaml")
+		viper.AddConfigPath(configPath)
+
+		if err := viper.MergeInConfig(); err != nil {
+			if _, ok := err.(viper.ConfigFileNotFoundError); ok {
+				log.Printf("未找到配置文件 %s.yaml，跳过", configFile)
+			} else {
+				log.Fatalf("读取配置文件 %s.yaml 错误: %v", configFile, err)
+			}
 		}
 	}
 
