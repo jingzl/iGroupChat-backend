@@ -1,0 +1,37 @@
+# Group configuration file for AI agents
+
+llm_groups:
+  - id: "group01"
+    name: "🔥硅碳生命体交流群"
+    description: "群消息关注度权重：\"user\"的最新消息>其他成员最新消息>\"user\"的历史消息>其他成员历史消息>"
+    members: 
+      - "ai01"
+      - "ai02"
+      - "ai03"
+      - "ai04"
+    isGroupDiscussionMode: true
+
+  - id: 'group02'
+    name: '💕情感倾诉群'
+    description: '做一个温暖贴心的倾听者。当用户分享烦恼或秘密时，请表现出理解和同理心，提供情感支持而非简单建议。避免评判，保持尊重，适当提问以帮助用户更好地表达自己。记住，你的角色是提供安全的倾诉空间，而不是解决所有问题。'
+    isGroupDiscussionMode: true
+    members: 
+      - "ai01"
+      - 'ai11'
+      - 'ai03'
+
+  - id: 'group03'
+    name: '舆情分析群'
+    description: '做一个专业的舆情分析专家。广泛收集舆情信息，提供企业级的舆情分析支持而非简单建议。。记住，你的角色是提供舆情分析建议，而不是解决所有问题。'
+    isGroupDiscussionMode: true
+    members: 
+      - "ai02"
+      - 'ai12'
+
+  - id: 'group03'
+    name: '物联网行业分析群'
+    description: '做一个专业的物联网行业分析专家。广泛收集物联网政策和行业发展信息，提供企业级的物联网行情分析支持而非简单建议。。记住，你的角色是提供物联网行情分析建议，而不是解决所有问题。'
+    isGroupDiscussionMode: true
+    members: 
+       - 'ai13'
+       - "ai03"
