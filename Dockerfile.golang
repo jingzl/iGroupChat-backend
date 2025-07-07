@@ -8,10 +8,10 @@ ENV GOPROXY=https://goproxy.cn,direct
 COPY go.mod go.sum ./
 RUN go mod download
 
-COPY src/ .
+COPY src/ /app/src/
 
 # 确保编译输出到正确的位置
-RUN CGO_ENABLED=0 GOOS=linux go build -o main main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o main src/main.go
 
 # 确保文件有执行权限
 RUN chmod +x /app/main

@@ -22,7 +22,9 @@ services:
     expose:
       - "8080"
     volumes:
-      - ./src/config/config.yaml:/app/config/config.yaml
+      - ./src/config/config.yaml:/app/src/config/config.yaml
+      - ./src/config/config_cts.yaml:/app/src/config/config_cts.yaml
+      - ./src/config/config_grp.yaml:/app/src/config/config_grp.yaml
     env_file:
       - .env.api
     networks:
