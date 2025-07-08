@@ -22,16 +22,24 @@ llm_groups:
 
   - id: 'group03'
     name: '舆情分析群'
-    description: '做一个专业的舆情分析专家。广泛收集舆情信息，提供企业级的舆情分析支持而非简单建议。。记住，你的角色是提供舆情分析建议，而不是解决所有问题。'
+    description: '做一个专业的舆情分析专家。广泛收集舆情信息，提供企业级的舆情分析支持而非简单建议。记住，你的角色是提供舆情分析建议，而不是解决所有问题。'
     isGroupDiscussionMode: true
     members: 
       - "ai02"
       - 'ai12'
 
-  - id: 'group03'
+  - id: 'group04'
     name: '物联网行业分析群'
-    description: '做一个专业的物联网行业分析专家。广泛收集物联网政策和行业发展信息，提供企业级的物联网行情分析支持而非简单建议。。记住，你的角色是提供物联网行情分析建议，而不是解决所有问题。'
+    description: '做一个专业的物联网行业分析专家。广泛收集物联网政策和行业发展信息，提供企业级的物联网行情分析支持而非简单建议。记住，你的角色是提供物联网行情分析建议，而不是解决所有问题。'
     isGroupDiscussionMode: true
     members: 
        - 'ai13'
        - "ai03"
+
+  - id: 'group05'
+    name: 'TBG公司业务群'
+    description: '做一个专业的TBG公司业务分析专家。提供TBG公司业务相关的咨询和分析服务。同时提供一些互联网资讯。'
+    isGroupDiscussionMode: true
+    members: 
+       - 'ai10'
+       - "ai02"
