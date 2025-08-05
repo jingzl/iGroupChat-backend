@@ -33,6 +33,47 @@ type LLMCharacter struct {
 	CustomPrompt string   `mapstructure:"custom_prompt" json:"custom_prompt"`
 	Tags         []string `json:"tags"`
 	RAG          bool     `json:"rag"`
+	Knowledge    string   `json:"knowledge"`
+}
+
+// AliyunSMSConfig 阿里云短信配置结构
+type AliyunSMSConfig struct {
+	AccessKeyID     string `mapstructure:"access_key_id" json:"access_key_id"`
+	AccessKeySecret string `mapstructure:"access_key_secret" json:"access_key_secret"`
+	SignName        string `mapstructure:"sign_name" json:"sign_name"`
+	TemplateCode    string `mapstructure:"template_code" json:"template_code"`
+}
+
+// RedisConfig Redis配置结构
+type RedisConfig struct {
+	Host     string `mapstructure:"host" json:"host"`
+	Port     string `mapstructure:"port" json:"port"`
+	Password string `mapstructure:"password" json:"password"`
+	DB       int    `mapstructure:"db" json:"db"`
+}
+
+// CloudflareConfig Cloudflare配置结构
+type CloudflareConfig struct {
+	AccountID   string `mapstructure:"account_id" json:"account_id"`
+	APIToken    string `mapstructure:"api_token" json:"api_token"`
+	ImagePrefix string `mapstructure:"image_prefix" json:"image_prefix"`
+}
+
+// WechatConfig 微信公众号配置结构
+type WechatConfig struct {
+	AppID            string `mapstructure:"app_id" json:"app_id"`
+	AppSecret        string `mapstructure:"app_secret" json:"app_secret"`
+	Token            string `mapstructure:"token" json:"token"`
+	CallbackURL      string `mapstructure:"callback_url" json:"callback_url"`
+	QRExpiresIn      int    `mapstructure:"qr_expires_in" json:"qr_expires_in"`
+	SessionExpiresIn int    `mapstructure:"session_expires_in" json:"session_expires_in"`
+}
+
+// WebSocketConfig WebSocket配置结构
+type WebSocketConfig struct {
+	ReadBufferSize  int  `mapstructure:"read_buffer_size" json:"read_buffer_size"`
+	WriteBufferSize int  `mapstructure:"write_buffer_size" json:"write_buffer_size"`
+	CheckOrigin     bool `mapstructure:"check_origin" json:"check_origin"`
 }
 
 // Config 应用配置结构
@@ -48,6 +89,12 @@ type Config struct {
 	LLMModels       map[string]string      `mapstructure:"llm_models"`
 	LLMGroups       []*LLMGroup            `mapstructure:"llm_groups"`
 	LLMCharacters   []*LLMCharacter        `mapstructure:"llm_characters"`
+	SMS             AliyunSMSConfig        `mapstructure:"sms" json:"sms"`
+	Redis           RedisConfig            `mapstructure:"redis" json:"redis"`
+	JWTSecret       string                 `mapstructure:"jwt_secret" json:"jwt_secret"`
+	Cloudflare      CloudflareConfig       `mapstructure:"cloudflare" json:"cloudflare"`
+	Wechat          WechatConfig           `mapstructure:"wechat" json:"wechat"`
+	WebSocket       WebSocketConfig        `mapstructure:"websocket" json:"websocket"`
 }
 
 var AppConfig Config
@@ -60,6 +107,39 @@ func LoadConfig() {
 
 	// 设置默认值
 	viper.SetDefault("server.port", "8080")
+
+	// 设置环境变量自动绑定
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
+
+	// 绑定具体的环境变量
+	viper.BindEnv("sms.access_key_id", "ALIYUN_SMS_ACCESS_KEY_ID")
+	viper.BindEnv("sms.access_key_secret", "ALIYUN_SMS_ACCESS_KEY_SECRET")
+	viper.BindEnv("sms.sign_name", "ALIYUN_SMS_SIGN_NAME")
+	viper.BindEnv("sms.template_code", "ALIYUN_SMS_TEMPLATE_CODE")
+
+	viper.BindEnv("redis.host", "REDIS_HOST")
+	viper.BindEnv("redis.port", "REDIS_PORT")
+	viper.BindEnv("redis.password", "REDIS_PASSWORD")
+	viper.BindEnv("redis.db", "REDIS_DB")
+
+	viper.BindEnv("jwt_secret", "JWT_SECRET")
+	viper.BindEnv("cloudflare.account_id", "CF_ACCOUNT_ID")
+	viper.BindEnv("cloudflare.api_token", "CF_API_TOKEN")
+	viper.BindEnv("cloudflare.image_prefix", "CF_IMAGE_PREFIX")
+
+	// 微信公众号配置环境变量绑定
+	viper.BindEnv("wechat.app_id", "WECHAT_APP_ID")
+	viper.BindEnv("wechat.app_secret", "WECHAT_APP_SECRET")
+	viper.BindEnv("wechat.token", "WECHAT_TOKEN")
+	viper.BindEnv("wechat.callback_url", "WECHAT_CALLBACK_URL")
+	viper.BindEnv("wechat.qr_expires_in", "WECHAT_QR_EXPIRES_IN")
+	viper.BindEnv("wechat.session_expires_in", "WECHAT_SESSION_EXPIRES_IN")
+
+	// WebSocket配置环境变量绑定
+	viper.BindEnv("websocket.read_buffer_size", "WS_READ_BUFFER_SIZE")
+	viper.BindEnv("websocket.write_buffer_size", "WS_WRITE_BUFFER_SIZE")
+	viper.BindEnv("websocket.check_origin", "WS_CHECK_ORIGIN")
 
 	for _, configFile := range configFiles {
 		viper.SetConfigName(configFile)
@@ -79,10 +159,24 @@ func LoadConfig() {
 		log.Fatalf("解析配置文件错误: %v", err)
 	}
 
-	// 环境变量覆盖
+	// 环境变量覆盖（保留原有逻辑作为后备）
 	if port := os.Getenv("SERVER_PORT"); port != "" {
 		AppConfig.Server.Port = port
 	}
+
+	// 调试日志：检查环境变量读取情况
+	log.Printf("SMS配置: AccessKeyID=%s, SignName=%s, TemplateCode=%s",
+		AppConfig.SMS.AccessKeyID, AppConfig.SMS.SignName, AppConfig.SMS.TemplateCode)
+	log.Printf("Redis配置: Host=%s, Port=%s, Password=%s, DB=%d",
+		AppConfig.Redis.Host, AppConfig.Redis.Port, AppConfig.Redis.Password, AppConfig.Redis.DB)
+	log.Printf("JWT Secret: %s", AppConfig.JWTSecret)
+	log.Printf("MySQL配置: %s", AppConfig.Database.DSN)
+	log.Printf("Cloudflare配置: AccountID=%s, APIToken=%s", AppConfig.Cloudflare.AccountID, AppConfig.Cloudflare.APIToken)
+	log.Printf("微信配置: AppID=%s, Token=%s, CallbackURL=%s, QRExpiresIn=%d, SessionExpiresIn=%d",
+		AppConfig.Wechat.AppID, AppConfig.Wechat.Token, AppConfig.Wechat.CallbackURL,
+		AppConfig.Wechat.QRExpiresIn, AppConfig.Wechat.SessionExpiresIn)
+	log.Printf("WebSocket配置: ReadBufferSize=%d, WriteBufferSize=%d, CheckOrigin=%t",
+		AppConfig.WebSocket.ReadBufferSize, AppConfig.WebSocket.WriteBufferSize, AppConfig.WebSocket.CheckOrigin)
 
 	log.Println("AppConfig:", AppConfig.LLMModels)
 

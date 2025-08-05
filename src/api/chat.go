@@ -33,7 +33,6 @@ func ChatHandler(c *gin.Context) {
 		UserID:  req.UserID,
 		Content: req.Message,
 	}, req, c.Writer)
-
 	if err != nil {
 		fmt.Println("处理流式消息失败:", err)
 		// 发送错误事件

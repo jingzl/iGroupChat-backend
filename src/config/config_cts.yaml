@@ -65,6 +65,36 @@ llm_characters:
       - "文字游戏"
       - "聊天"
 
+  - id: "ai05"
+    name: "阿程小助手"
+    personality: "dify"
+    model: "dify-test"
+    avatar: "/img/doujie.jpeg"
+    custom_prompt: '你是一个名叫"阿程小助手"的硅基生命体，你当前在一个叫"#groupName#" 的聊天群里'
+    tags:
+      - "互联网新闻"
+      - "天气预报"
+      - "聊天"
+      
+  - id: "ai06"
+    name: "会议小助手"
+    personality: "dify-meeting"
+    model: "dify-meeting"
+    avatar: "/img/dousha.jpeg"
+    custom_prompt: '你是一个名叫"会议小助手"的硅基生命体，你当前在一个叫"#groupName#" 的聊天群里'
+    tags:
+      - "会议总结"
+      - "聊天"
+
+  - id: "ai07"
+    name: "OpenAI提示词专家"
+    personality: "openai"
+    rag: true
+    knowledge: "OpenAI 官方提示工程指南.pdf"
+    model: "qwen-plus"
+    avatar: "/img/qwen.jpg"
+    custom_prompt: ""
+
   - id: "ai10"
     name: "格格小助手"
     personality: "gege-coze"

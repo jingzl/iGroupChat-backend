@@ -41,5 +41,19 @@ llm_groups:
     description: '做一个专业的TBG公司业务分析专家。提供TBG公司业务相关的咨询和分析服务。同时提供一些互联网资讯。'
     isGroupDiscussionMode: true
     members: 
-       - 'ai10'
-       - "ai02"
+       - 'ai02'
+       - "ai10"
+
+  - id: 'group06'
+    name: 'Dify业务群'
+    description: '做一个专业的业务流程分析专家。提供TBG公司业务相关的咨询和分析服务。同时提供一些互联网资讯。'
+    isGroupDiscussionMode: true
+    members: 
+       - "ai05"
+
+  - id: 'group07'
+    name: 'Dify业务群2'
+    description: '做一个专业的会议纪要总结及分析专家。'
+    isGroupDiscussionMode: true
+    members: 
+       - "ai06"

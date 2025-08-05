@@ -2,7 +2,45 @@ server:
   port: 8080
 
 database:
-  dsn: "memory" 
+  dsn: "mysql" 
+
+# 阿里云短信服务配置 (将通过环境变量覆盖)
+sms:
+  access_key_id: "YOUR_ALIYUN_ACCESS_KEY_ID"
+  access_key_secret: "YOUR_ALIYUN_ACCESS_KEY_SECRET"
+  sign_name: "您的签名"
+  template_code: "SMS_123456789"
+
+# Redis配置
+redis:
+  host: "redis"  # 将通过环境变量覆盖
+  port: "6379"   # 将通过环境变量覆盖
+  password: "redis123"  # 将通过环境变量覆盖
+  db: 0  # 将通过环境变量覆盖
+
+# JWT密钥配置
+jwt_secret: "your-super-secret-jwt-key-change-this-in-production"  # 将通过环境变量覆盖
+
+# Cloudflare配置
+cloudflare:
+  account_id: "YOUR_CLOUDFLARE_ACCOUNT_ID"  # 将通过环境变量覆盖
+  api_token: "YOUR_CLOUDFLARE_API_TOKEN"    # 将通过环境变量覆盖
+  image_prefix: "https://imagedelivery.net/YOUR_ACCOUNT_HASH/"  # 将通过环境变量覆盖
+
+# 微信公众号配置
+wechat:
+  app_id: "wx1234567890abcdef"           # 微信公众号AppID，将通过环境变量覆盖
+  app_secret: "1234567890abcdef12345678" # 微信公众号AppSecret，将通过环境变量覆盖
+  token: "your_wechat_token_here"        # 微信公众号Token，将通过环境变量覆盖
+  callback_url: "https://your-domain.com/api/auth/wechat/callback"  # 回调URL，将通过环境变量覆盖
+  qr_expires_in: 600                     # 临时二维码过期时间(秒)
+  session_expires_in: 600                # 登录会话过期时间(秒)
+
+# WebSocket配置
+websocket:
+  read_buffer_size: 1024   # 读取缓冲区大小
+  write_buffer_size: 1024  # 写入缓冲区大小
+  check_origin: true       # 是否检查源
 
 llm_providers:
    oneapi: 
@@ -20,7 +58,8 @@ llm_models:
     deepseek-r1-7b: "oneapi"
     qwen3-8b: "oneapi"
     glm-z1-9b: "oneapi"
-    dify-tbg: "newapi"
+    dify-test: "newapi"
+    dify-meeting: "newapi"
     gege-coz: "oneapi"
 
 llm_system_prompt: '注意重要：1、你的名字是"#name#"，认准自己的身份；2、你的输出内容不要加#name#：这种多余前缀；3、如果用户提出玩游戏，比如成语接龙等，严格按照游戏规则，不要说一大堆，要简短精炼；4、如果没有明确回复字数的要求，则保持群聊风格字数严格控制在200字以内，如果有明确回复字数要求，则要按照要求的字数回复内容；如果你的身份是专家，则应该根据专业要求来完整回复用户内容。'

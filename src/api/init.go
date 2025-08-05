@@ -17,6 +17,11 @@ func InitHandler(c *gin.Context) {
 		"characters": config.AppConfig.LLMCharacters,
 	}
 
+	// 如果存在用户信息，则添加到响应中
+	if user, exists := c.Get("user"); exists {
+		initData["user"] = user
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"code":    200,
 		"message": "成功",
