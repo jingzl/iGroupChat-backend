@@ -1,57 +1,52 @@
-# Docker Compose file for iGroupChat Application
-# 
 services:
   nginx:
     image: registry.openanolis.cn/openanolis/nginx:1.14.1-8.6
     ports:
       - "8082:80"
-      - "443:443"
     volumes:
       - ./nginx/conf.d:/etc/nginx/conf.d
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
-      - /etc/ssl:/etc/nginx/ssl
       - ./static:/usr/share/nginx/html
     depends_on:
-      golang-app:
-        condition: service_healthy
-      #rag-app:
-      #  condition: service_healthy
+      - golang-app
+      #- rag-app
     networks:
       - app-network
-    restart: always
 
   golang-app:
     build:
       context: .
-      dockerfile: Dockerfile.golang
+      dockerfile: Dockerfile.golang.dev
     expose:
       - "8080"
     volumes:
-      - ./src/config/config.yaml:/app/src/config/config.yaml
-      - ./src/config/config_cts.yaml:/app/src/config/config_cts.yaml
-      - ./src/config/config_grp.yaml:/app/src/config/config_grp.yaml
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
+      # 挂载源代码目录以支持热重载
+      - ./src:/app/src
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+      - ./.air.toml:/app/.air.toml
+      # 创建tmp目录用于air编译
+      - air-tmp:/app/tmp
     env_file:
       - .env.api
+    environment:
+      - GO_ENV=development
     depends_on:
-      redis:
-        condition: service_healthy
-      mysql:
-        condition: service_healthy
+      - redis
+      - mysql
     networks:
       - app-network
     restart: always
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "-O", "-", "http://localhost:8080/health"]
-      interval: 10s
-      timeout: 10s
-      retries: 5
-      start_period: 10s
-########如果开启rag 知识库至少需要4G内存，请把下面注释去掉#######
-  #  rag-app:
+    # 开发模式下显示日志
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # rag-app:
   #   build:
-  #   context: .
+  #     context: .
   #     dockerfile: Dockerfile.rag
   #   expose:
   #     - "8070"
@@ -65,7 +60,7 @@ services:
   #   restart: always
 
   redis:
-    image: swr.cn-north-4.myhuaweicloud.com/ddn-k8s/docker.io/redis:7.0.14-alpine
+    image: redis:7-alpine
     ports:
       - "6379:6379"
     volumes:
@@ -100,6 +95,9 @@ services:
       interval: 30s
       timeout: 10s
       retries: 5
+
+volumes:
+  air-tmp:
 
 networks:
   app-network:

@@ -5,6 +5,13 @@ BotGroup.Chat 是一个基于 React 的多人 AI 聊天应用，支持多个 AI 
 
 > 🔗 原项目地址：[botgroup.chat](https://github.com/maojindao55/botgroup.chat)
 
+## 📚 文档
+
+- [Docker部署说明](doc/DOCKER_SETUP.md) - Docker容器化部署配置
+- [Redis配置指南](doc/REDIS_SETUP.md) - Redis存储配置和使用
+- [短信服务配置](doc/SMS_USAGE.md) - 阿里云短信服务集成
+- [用户认证系统](doc/LOGIN_USAGE.md) - JWT登录和用户管理
+- [开发环境配置](doc/DEVELOPMENT.md) - Air热重载开发环境搭建
 
 ## 为什么要做botgroup.chat服务器版？
 原项目仅支持 Cloudflare Pages 部署，这导致：
@@ -25,7 +32,7 @@ git clone https://github.com/maojindao55/botgroup.chat-server
 ```
 
 2. 安装依赖
-- 安装 docker 
+- 安装 docker
 - 安装 docker-compose
 - [如何安装? 请访问docker官网](https://www.docker.com/)
 
@@ -134,6 +141,24 @@ llm_groups:
  ...
 
 ```
+## 配置知识库
+ * 在 `/rag/data/` 目录下增加知识库文件，目前支持文件类型: ` .pdf .docx .md .txt `。配置示例如下：
+ ```
+ /rag/data/file1.pdf
+ /rag/data/file2.docx
+ /rag/data/file3.txt
+ ```
+ * 在参考上一步 `config.yaml` 的配置说明，其中在角色配置属性中增加 `rag: true` 和`    knowledge: "file.docx"` 两个属性。配置示例如下：
+ ```
+   - id: "ai13"
+    name: "教练"
+    personality: "coach"
+    rag: true                //开启知识库查询
+    knowledge: "file2.docx"  //知识库的文件名，对应 /rag/data/file2.docx
+    model: "qwen-plus"
+    avatar: "/img/qwen.jpg"
+    custom_prompt: ""
+ ```
 
 
 ## 贡献指南
