@@ -15,7 +15,7 @@ RUN go mod download
 COPY src/ /app/src/
 
 # 确保编译输出到正确的位置，使用模块方式构建
-RUN CGO_ENABLED=0 GOOS=linux GO111MODULE=on go build -o main src/main.go
+RUN CGO_ENABLED=0 GOOS=linux GO111MODULE=on go build -o main ./src
 
 # 确保文件有执行权限
 RUN chmod +x /app/main
