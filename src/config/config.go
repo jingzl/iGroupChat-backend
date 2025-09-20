@@ -92,6 +92,8 @@ type Config struct {
 	SMS             AliyunSMSConfig        `mapstructure:"sms" json:"sms"`
 	Redis           RedisConfig            `mapstructure:"redis" json:"redis"`
 	JWTSecret       string                 `mapstructure:"jwt_secret" json:"jwt_secret"`
+	AuthAccess      int                    `mapstructure:"auth_access" json:"auth_access"`
+	ChatRateLimit   int                    `mapstructure:"chat_rate_limit" json:"chat_rate_limit"`
 	Cloudflare      CloudflareConfig       `mapstructure:"cloudflare" json:"cloudflare"`
 	Wechat          WechatConfig           `mapstructure:"wechat" json:"wechat"`
 	WebSocket       WebSocketConfig        `mapstructure:"websocket" json:"websocket"`
@@ -140,6 +142,12 @@ func LoadConfig() {
 	viper.BindEnv("websocket.read_buffer_size", "WS_READ_BUFFER_SIZE")
 	viper.BindEnv("websocket.write_buffer_size", "WS_WRITE_BUFFER_SIZE")
 	viper.BindEnv("websocket.check_origin", "WS_CHECK_ORIGIN")
+
+	//是否登录检测
+	viper.BindEnv("auth_access", "AUTH_ACCESS")
+
+	//Chat接口限流配置
+	viper.BindEnv("chat_rate_limit", "CHAT_RATE_LIMIT")
 
 	for _, configFile := range configFiles {
 		viper.SetConfigName(configFile)

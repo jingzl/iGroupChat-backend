@@ -96,15 +96,54 @@ func registerRoutes(r *gin.Engine) {
 		//apiGroup.POST("/sendcode", api.SendCodeHandler) // 测试用接口
 		apiGroup.GET("/captcha", api.CaptchaHandler)
 		apiGroup.POST("/captcha/check", api.CaptchaCheckHandler)
+		// 微信登录相关接口（无需认证）
+
+		authGroup := apiGroup.Group("/auth")
+		authGroup.Use(middleware.SecurityHeaders()) // 安全头
+		{
+			// 微信扫码登录
+			wechatGroup := authGroup.Group("/wechat")
+			wechatGroup.Use(middleware.WechatCORS()) // 微信专用CORS
+			{
+				// 生成二维码（需要限流）
+				wechatGroup.POST("/qr-code",
+					middleware.WechatQRCodeRateLimit(),
+					api.WechatQRCodeHandler)
+
+				// 微信回调（需要签名验证和限流）
+				wechatGroup.GET("/callback",
+					middleware.WechatCallbackRateLimit(),
+					api.WechatCallbackHandler)
+
+				wechatGroup.POST("/callback",
+					middleware.WechatCallbackRateLimit(),
+					middleware.WechatSignatureVerify(),
+					api.WechatCallbackHandler)
+
+				// 状态查询（需要限流）
+				wechatGroup.GET("/status/:session_id",
+					middleware.WechatStatusRateLimit(),
+					api.WechatLoginStatusHandler)
+
+				// 测试接口（仅开发环境，需要限流）
+				wechatGroup.GET("/test",
+					middleware.WechatQRCodeRateLimit(),
+					api.WechatLoginTestHandler)
+
+				// 调试接口（仅开发环境）
+				wechatGroup.GET("/debug/token", api.WechatTokenDebugHandler)
+			}
+		}
+		// 匿名Chat接口（带限流）
+		apiGroup.GET("/init", middleware.ChatRateLimitMiddleware(), api.InitHandler)
+		apiGroup.POST("/chat", middleware.ChatRateLimitMiddleware(), api.ChatHandler)
 
 		// 需要认证的用户接口
 		userGroup := apiGroup.Group("/")
 		userGroup.Use(middleware.AuthMiddleware())
 		{
-			// 初始化接口
-			userGroup.GET("/init", api.InitHandler)
-			// 聊天相关接口
-			userGroup.POST("/chat", api.ChatHandler)
+			// // 初始化接口
+			// userGroup.GET("/init", api.InitHandler)
 			// 调度相关接口
 			userGroup.POST("/scheduler", api.SchedulerHandler)
 			// 用户相关接口
@@ -112,6 +151,33 @@ func registerRoutes(r *gin.Engine) {
 			userGroup.POST("/user/update", api.UserUpdateHandler)
 			// 上传相关接口
 			userGroup.POST("/user/upload", api.UploadHandler)
+
+			// 群组管理接口
+			groupsGroup := userGroup.Group("/groups")
+			{
+				groupsGroup.POST("/", api.CreateGroupHandler)                       // 创建群组
+				groupsGroup.GET("/", api.GetGroupsHandler)                          // 获取群组列表
+				groupsGroup.GET("/:id", api.GetGroupHandler)                        // 获取单个群组详情
+				groupsGroup.PUT("/:id", api.UpdateGroupHandler)                     // 更新群组
+				groupsGroup.DELETE("/:id", api.DeleteGroupHandler)                  // 删除群组
+				groupsGroup.GET("/:id/characters", api.GetCharactersByGroupHandler) // 获取群组下的角色列表
+			}
+
+			// 角色管理接口
+			charactersGroup := userGroup.Group("/characters")
+			{
+				charactersGroup.POST("/", api.CreateCharacterHandler)      // 创建角色
+				charactersGroup.GET("/", api.GetCharactersHandler)         // 获取角色列表
+				charactersGroup.GET("/:id", api.GetCharacterHandler)       // 获取单个角色详情
+				charactersGroup.PUT("/:id", api.UpdateCharacterHandler)    // 更新角色
+				charactersGroup.DELETE("/:id", api.DeleteCharacterHandler) // 删除角色
+			}
 		}
+	}
+
+	// WebSocket路由（在API组之外）
+	wsGroup := r.Group("/ws")
+	{
+		wsGroup.GET("/auth/:session_id", api.WebSocketHandler) // WebSocket连接
 	}
 }
